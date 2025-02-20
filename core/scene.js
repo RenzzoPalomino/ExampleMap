@@ -1,13 +1,16 @@
 import * as THREE from '../three/three.module.js';
 import { OrbitControls } from '../three/OrbitControls.js';
-
 export const scene = new THREE.Scene();
 export const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 export const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-export function initScene() {
+
+export function initScene(tag_target) {
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    // document.body.appendChild(renderer.domElement); //target de elemento
+    const container = document.getElementById(tag_target);
+    container.appendChild(renderer.domElement);
+        
 
     camera.position.set(0, 5, 5);
     camera.lookAt(0, 0, 0);
@@ -21,12 +24,12 @@ export function initScene() {
 
     const initialPosition = camera.position.clone();
     const initialTarget = controls.target.clone();
-    buttonReset(camera,controls,initialPosition,initialTarget)
+    buttonReset(camera,controls,initialPosition,initialTarget,container)
 
     controls.enableDamping = true;
 }
 
-function buttonReset(camera, controls, initialPosition, initialTarget) {
+function buttonReset(camera, controls, initialPosition, initialTarget, target) {
     var resetButton = document.createElement('button');
     resetButton.innerText = 'Restablecer Vista';
     resetButton.style.position = 'absolute';
@@ -38,7 +41,7 @@ function buttonReset(camera, controls, initialPosition, initialTarget) {
     resetButton.style.border = 'none';
     resetButton.style.borderRadius = '5px';
     resetButton.style.cursor = 'pointer';
-    document.body.appendChild(resetButton);
+    target.appendChild(resetButton);
 
     let isResetting = false;
     let progress = 0;
@@ -47,6 +50,9 @@ function buttonReset(camera, controls, initialPosition, initialTarget) {
     resetButton.addEventListener('click', () => {
         isResetting = true;
         progress = 0;
+
+        // Deshabilitar controles durante el reseteo
+        controls.enabled = false;
     });
 
     function animateReset(deltaTime) {
@@ -67,6 +73,9 @@ function buttonReset(camera, controls, initialPosition, initialTarget) {
                 camera.position.copy(initialPosition);
                 controls.target.copy(initialTarget);
                 controls.update();
+
+                // Reactivar los controles inmediatamente después del reseteo
+                controls.enabled = true;
             }
         }
     }
