@@ -7,20 +7,30 @@ export const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 export function initScene(tag_target) {
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // document.body.appendChild(renderer.domElement); //target de elemento
+
     const container = document.getElementById(tag_target);
     container.appendChild(renderer.domElement);
         
+    // Asegúrate de que el canvas ocupa todo el contenedor
+     renderer.domElement.style.width = '100%';
+     renderer.domElement.style.height = '100%';
+     renderer.domElement.style.position = 'absolute';
 
     camera.position.set(0, 5, 5);
     camera.lookAt(0, 0, 0);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.mouseButtons = {
-        LEFT: THREE.MOUSE.PAN,     // Clic Izquierdo para desplazar
-        MIDDLE: THREE.MOUSE.DOLLY, // Rueda para zoom (por defecto)
-        RIGHT: THREE.MOUSE.ROTATE  // Clic Derecho para rotar
+        LEFT: THREE.MOUSE.PAN,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.ROTATE 
     };
+    controls.maxPolarAngle = Math.PI / 2 -0.1;  // 90 grados (plano horizontal)
+    controls.screenSpacePanning = false;// Evitar que el paneo afecte la altura (Y fijo)
+    
+    //descomentar para manejar el mapa de ejes
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(axesHelper);
 
     const initialPosition = camera.position.clone();
     const initialTarget = controls.target.clone();
@@ -30,17 +40,21 @@ export function initScene(tag_target) {
 }
 
 function buttonReset(camera, controls, initialPosition, initialTarget, target) {
+    // console.log(camera,controls,initialPosition,initialTarget,target)
+    target.style.position = 'relative';
+
     var resetButton = document.createElement('button');
     resetButton.innerText = 'Restablecer Vista';
-    resetButton.style.position = 'absolute';
+    resetButton.style.position = 'relative';
     resetButton.style.top = '10px';
     resetButton.style.left = '10px';
     resetButton.style.padding = '10px';
-    resetButton.style.backgroundColor = '#007BFF';
+    resetButton.style.backgroundColor = '#34495E';
     resetButton.style.color = 'white';
     resetButton.style.border = 'none';
     resetButton.style.borderRadius = '5px';
     resetButton.style.cursor = 'pointer';
+    
     target.appendChild(resetButton);
 
     let isResetting = false;

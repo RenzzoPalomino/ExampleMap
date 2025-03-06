@@ -5,10 +5,8 @@ import { setupEventListeners } from './actions/events.js';
 import { adjust_origin } from './origin/data.js';
 export const tag_target = 'map-container';
 
-var plano ='./plano/plano_ferial_2024.png';
+var plano = './plano/Plano_EA2025.jpg'
 var background ='./plano/newbg.jpg'
-//plano = './plano/Plano_EA2025.pdf'
-
 
 initScene(tag_target);
 loadMap(plano,background);
