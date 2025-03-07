@@ -170,14 +170,54 @@ export const adjust_origin=[
       "label": "G- 04  (4x3)",
       "selected": [
         {
-          "color": "#75b4db",
-          "text_color": "#A5A29A",
+          "color": "blue",
+          "text_color": "red",
           "isSelected": false
         },
         {
-          "color": "#455a64",
-          "text_color": "#ffffff",
+          "color": "red",
+          "text_color": "blue",
           "isSelected": true
+        }
+      ]
+    }
+  },
+
+  {
+    "id": 11,
+    "position": [
+      {
+        "x": 3,
+        "z": 3
+      },
+      {
+        "x": 4,
+        "z": 3
+      },
+      {
+        "x": 4,
+        "z": 4
+      },
+      {
+        "x": 3,
+        "z": 4
+      }
+    ],
+    "body": {
+      "height": 1
+    },
+    "style": {
+      "label": "G- 06  (4x3)",
+      "selected": [
+        {
+          "color": "red",
+          "text_color": "green",
+          "isSelected": true
+        },
+        {
+          "color": "white",
+          "text_color": "black",
+          "isSelected": false
         }
       ]
     }

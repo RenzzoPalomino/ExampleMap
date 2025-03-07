@@ -2,7 +2,7 @@ import * as THREE from '../three/three.module.js';
 import { camera, renderer } from '../core/scene.js';
 import { stands } from '../core/stands.js';
 // Configuración canvas del stand 3D
-import { createTextTexture } from '../utils/textures.js';
+import { createTextTexture,applyTopTexture } from '../utils/textures.js';
 // Acciones de selección
 import { processStandSelection } from './logic.js';
 import { proccessStandDeselection } from './logic.js';
@@ -47,7 +47,14 @@ function processSelection(event) {
         if (standInfo.isSelected) return;
         standInfo.isSelected = isSelected;
 
-        const newTexture = createTextTexture(_style.label, selected.color, selected.text_color);
+        const topTexture = createTextTexture(standInfo, isSelected);
+
+        // **Actualizar la textura del label si existe**
+        if (standInfo.labelMesh) {
+            standInfo.labelMesh.material.map.dispose(); // Liberar la textura anterior
+            standInfo.labelMesh.material.map = topTexture;
+            standInfo.labelMesh.material.needsUpdate = true;
+        }
 
         // Manejo seguro del material
         selectedStand.material.color.set(new THREE.Color(selected.color));
@@ -78,11 +85,17 @@ function processDeselection(event) {
         if (!standInfo.isSelected) return;
         standInfo.isSelected = isSelected;
 
-        const originalTexture = createTextTexture(_style.label, nonSelected.color, nonSelected.text_color);
+        const topTexture = createTextTexture(standInfo, isSelected);
+        
+        // **Actualizar la textura del label si existe**
+        if (standInfo.labelMesh) {
+            standInfo.labelMesh.material.map.dispose(); // Liberar la textura anterior
+            standInfo.labelMesh.material.map = topTexture;
+            standInfo.labelMesh.material.needsUpdate = true;
+        }
 
         // Manejo seguro del material
         selectedStand.material.color.set(new THREE.Color(nonSelected.color));
         proccessStandDeselection(standInfo);
-
     }
 }

@@ -1,6 +1,7 @@
 import * as THREE from '../three/three.module.js';
 import { scene } from './scene.js';
 import { createTextTexture } from '../utils/textures.js';
+
 export const stands = [];
 const factor_de_conversion = -1;
 
@@ -49,72 +50,76 @@ export function createStands(standData) {
         stands.push(stand);
     });
 }
+export function createStandLabel(standData) {
+    standData.forEach(data => {
+        const _positions = data.position; 
+        const _body = data.body;
+        const _style = data.style;
 
-export function createStands_bk(standData) {
+        // **1. Crear la textura con el label**
+        const textTexture = createTextTexture(data, false);
+        const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
+
+        // **2. Calcular el centro del stand**
+        let centerX = 0, centerZ = 0;
+        _positions.forEach(pos => {
+            centerX += pos.x;
+            centerZ += pos.z;
+        });
+        centerX /= _positions.length;
+        centerZ /= _positions.length;
+
+        // **3. Crear la geometría del plano (misma lógica de coordenadas)**
+        const labelGeometry = new THREE.PlaneGeometry(1.5, 0.7);
+        const labelMesh = new THREE.Mesh(labelGeometry, textMaterial);
+
+        // **4. Posicionar el plano sobre el stand**
+        labelMesh.position.set(centerX, _body.height + 0.05, centerZ);
+        labelMesh.rotation.x = -Math.PI / 2;
+
+        // **5. Agregarlo a la escena**
+        scene.add(labelMesh);
+
+        // **6. Guardar `labelMesh` en `userData` del stand**
+        const stand = stands.find(s => s.userData.id === data.id);
+        if (stand) {
+            stand.userData.labelMesh = labelMesh; // Guardamos el label
+        }
+    });
+}
+
+export function createStandLabel2(standData) {
     standData.forEach(data => {
         // console.log(data)
-        var _body = data.body;
-        var _position = data.position;
-        var _style = data.style;
-        // console.log(_position.z)
-        var nonSelected = _style.selected.find(r => r.isSelected == false);
-        const standColor = new THREE.Color(nonSelected.color);
-        const standMaterial = [
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial(
-            { 
-                map: createTextTexture(_style.label, nonSelected.color, nonSelected.text_color) 
-            }),
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ color: standColor })
-        ];
+        const _positions = data.position; // Coordenadas del stand
+        const _body = data.body;
+        const _style = data.style;
 
-        const standGeometry = new THREE.BoxGeometry(_body.width, _body.height, _body.depth);
-        const stand = new THREE.Mesh(standGeometry, standMaterial);
+        // **1. Crear la textura con el label**
+        const textTexture = createTextTexture(data,false);
+        const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
 
-        //Ajuste del eje Z para alinear con la convención de Three.js
-        var artificio_Z = (_position.z * factor_de_conversion)
-        
-        stand.position.set(_position.x, _body.height / 2, artificio_Z); // Usar _position.z en vez de y
-        
-        // stand.position.set(_position.x, 0, _position.z); // Usar _position.z en vez de y
+        // **2. Calcular el centro del stand**
+        let centerX = 0, centerZ = 0;
+        _positions.forEach(pos => {
+            centerX += pos.x;
+            centerZ += pos.z;
+        });
+        centerX /= _positions.length;
+        centerZ /= _positions.length;
 
-        stand.userData = { ...data, isSelected: false };
-        
-        scene.add(stand);
-        stands.push(stand);
+        // **3. Crear la geometría del plano (misma lógica de coordenadas)**
+        const labelGeometry = new THREE.PlaneGeometry(1.5, 0.7);
+        const labelMesh = new THREE.Mesh(labelGeometry, textMaterial);
+
+        // **4. Posicionar el plano sobre el stand**
+        labelMesh.position.set(centerX, _body.height + 0.05, centerZ);
+        labelMesh.rotation.x = -Math.PI / 2; // Mantenerlo paralelo al suelo
+
+        // **5. Agregarlo a la escena**
+        scene.add(labelMesh);
     });
 }
 
 
-export function createStands2(standData) {
-    standData.forEach(data => {
-        console.log(data)
-        var _body = data.body;
-        var _position = data.position;
-        var _style = data.style;
-        //var nonSelected = _style.nonSelected;
-        var nonSelected = _style.selected.find(r => r.isSelected == false); //ojo con esto
-        const standColor = new THREE.Color(nonSelected.color);
-        const standMaterial = [
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ 
-                map: createTextTexture(_style.label, nonSelected.color, nonSelected.text_color) 
-            }),
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ color: standColor }),
-            new THREE.MeshBasicMaterial({ color: standColor })
-        ];
 
-        const standGeometry = new THREE.BoxGeometry(_body.width, _body.height, _body.depth);
-        const stand = new THREE.Mesh(standGeometry, standMaterial);
-        stand.position.set(_position.x, _body.height / 2, _position.y);
-        stand.userData = { ...data, isSelected: false };
-        
-        scene.add(stand);
-        stands.push(stand);
-    });
-}
